@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack Enterprise | Academic Analytics Portal</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --amber: #d97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .hidden-element {
+            display: none !important;
+        }
+
+        /* Login Toggle Buttons */
+        .login-toggle {
+            display: flex;
+            background: var(--border);
+            padding: 4px;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-toggle button {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .login-toggle button.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], input[type="password"], input[type="number"], select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: var(--card-bg);
+            color: var(--text);
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* Buttons */
+        .btn-primary, .btn-success, .btn-secondary {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary { background: var(--primary); }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-success { background: var(--success); }
+        .btn-secondary { background: var(--text-muted); }
+
+        /* Dashboards Styling */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .badge {
+            background: #fee2e2;
+            color: var(--danger);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .student-badge { background: #dbeafe; color: var(--primary); }
+
+        .search-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .student-info-bar {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .marks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Performance Analytics Widget Cards */
+        .analytics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .analytics-box {
+            background: var(--background);
+            padding: 1.25rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .analytics-box h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .analytics-box .value {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Native HTML Progress Bar Components */
+        .progress-container {
+            background: #e2e8f0;
+            border-radius: 9999px;
+            height: 10px;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-bar {
+            background: var(--primary);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease-in-out;
+        }
+
+        /* Tables */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .report-table th, .report-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .report-table th { background: var(--background); font-weight: 600; }
+
+        .pass { color: var(--success); font-weight: bold; }
+        .fail { color: var(--danger); font-weight: bold; }
+
+        .auth-switch-text {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .auth-switch-text span {
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        #logoutBtn {
+            position: absolute;
+            right: 0;
+            top: 10px;
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .error-text { color: var(--danger); margin-top: 1rem; font-size: 0.9rem; text-align: center;}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🎓 EduTrack Enterprise</h1>
+            <p>University Academic Performance Portal & Analytics Engine</p>
+            <button id="logoutBtn" class="hidden-element" onclick="logout()">Logout</button>
+        </header>
+
+        <section id="loginSection" class="card">
+            <h2>Portal Login</h2>
+            <div class="login-toggle">
+                <button id="toggleStudent" class="active" onclick="switchRole('student')">Student Portal</button>
+                <button id="toggleFaculty" onclick="switchRole('faculty')">Faculty Portal</button>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label id="loginLabel" for="username">Student USN</label>
+                    <input type="text" id="username" placeholder="e.g., 1XX20CS001" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary">Access Dashboard</button>
+            </form>
+            <p id="studentRegisterPrompt" class="auth-switch-text">New Student? <span onclick="showRegistration(true)">Create an Account</span></p>
+            <p id="loginError" class="error-text hidden-element"></p>
+        </section>
+
+        <section id="registerSection" class="card hidden-element">
+            <h2>Student Account Registration</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Register your unique USN to track performance metrics.</p>
+            
+            <form id="registerForm" onsubmit="handleRegistration(event)">
+                <div class="form-group">
+                    <label for="regUsn">University Seat Number (USN)</label>
+                    <input type="text" id="regUsn" placeholder="e.g., 1XX20CS001" required>
+                </div>
+                <div class="form-group">
+                    <label for="regName">Full Name</label>
+                    <input type="text" id="regName" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Set Password</label>
+                    <input type="password" id="regPassword" placeholder="••••••••" minlength="4" required>
+                </div>
+                <button type="submit" class="btn-success">Register Account</button>
+                <button type="button" class="btn-secondary" style="margin-top: 0.5rem;" onclick="showRegistration(false)">Back to Login</button>
+            </form>
+        </section>
+
+        <section id="facultyDashboard" class="card hidden-element">
+            <div class="dashboard-header">
+                <h2>Faculty Management Console</h2>
+                <span class="badge">Faculty Mode</span>
+            </div>
+            
+            <div class="search-box">
+                <h3>Find Student Record</h3>
+                <div class="search-row">
+                    <input type="text" id="searchUsn" placeholder="Target USN (e.g., 1XX20CS001)">
+                    <select id="facultySemSelect">
+                        <option value="1">Semester 1</option>
+                        <option value="2">Semester 2</option>
+                        <option value="3">Semester 3</option>
+                        <option value="4">Semester 4</option>
+                        <option value="5">Semester 5</option>
+                        <option value="6">Semester 6</option>
+                        <option value="7">Semester 7</option>
+                        <option value="8">Semester 8</option>
+                    </select>
+                    <button class="btn-primary" onclick="searchStudentAndSem()">Load Sheet</button>
+                </div>
+            </div>
+
+            <div id="marksManagementArea" class="hidden-element">
+                <div class="student-info-bar">
+                    <p>Student: <strong id="currentEditingName">-</strong> (<span id="currentEditingUsn">-</span>)</p>
+                    <p>Term: <strong>Semester <span id="currentEditingSem">-</span></strong></p>
+                </div>
+
+                <div class="analytics-row" id="facultyInsightRow">
+                     <div class="analytics-box">
+                         <h4>Current Term Aggregate</h4>
+                         <div class="value" id="facultyTermTotal">-</div>
+                     </div>
+                     <div class="analytics-box">
+                         <h4>Term Performance Status</h4>
+                         <div class="value" id="facultyTermStatus" style="font-size:1.2rem; padding-top:8px;">-</div>
+                     </div>
+                </div>
+
+                <form id="marksForm" onsubmit="saveMarks(event)">
+                    <div class="marks-grid" id="facultyDynamicSubjectsGrid">
+                        </div>
+                    <button type="submit" class="btn-success">Publish Academic Grades</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="studentDashboard" class="card hidden-element">
+            <div class="dashboard-header">
+                <h2>Academic Performance Analytics</h2>
+                <span class="badge student-badge">Student Mode</span>
+            </div>
+            
+            <div class="student-info-bar">
+                <p><strong>Student Name:</strong> <span id="displayStudentName">-</span></p>
+                <p><strong>USN:</strong> <span id="displayUsn">-</span></p>
+            </div>
+
+            <div class="analytics-row">
+                <div class="analytics-box">
+                    <h4>Current SGPA</h4>
+                    <div class="value" id="sgpaDisplay">0.00</div>
+                </div>
+                <div class="analytics-box">
+                    <h4>Cumulative CGPA</h4>
+                    <div class="value" id="cgpaDisplay">0.00</div>
+                </div>
+                <div class="analytics-box">
+                    <h4>Syllabus Clearance</h4>
+                    <div class="value" id="clearanceDisplay" style="color: var(--success)">0 / 4</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label style="font-size: 0.85rem; font-weight: bold; text-transform: uppercase; color: var(--text-muted)">Semester Benchmark Progression</label>
+                <div class="progress-container">
+                    <div class="progress-bar" id="studentProgressBar"></div>
+                </div>
+            </div>
+
+            <div class="form-group" style="max-width: 300px; margin-bottom: 1.5rem;">
+                <label for="studentSemSelect"><strong>Switch Academic Semester View:</strong></label>
+                <select id="studentSemSelect" onchange="renderStudentData()">
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                    <option value="3">Semester 3</option>
+                    <option value="4">Semester 4</option>
+                    <option value="5">Semester 5</option>
+                    <option value="6">Semester 6</option>
+                    <option value="7">Semester 7</option>
+                    <option value="8">Semester 8</option>
+                </select>
+            </div>
+
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Subject Title</th>
+                        <th>Max Marks</th>
+                        <th>Marks Obtained</th>
+                        <th>Letter Grade</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                    </tbody>
+            </table>
+        </section>
+
+    </div>
+
+    <script>
+        // --- ENGINEERING ACADEMIC SYLLABUS SCHEME ---
+        const SYLLABUS_SCHEME = {
+            1: ["Engineering Mathematics I", "Engineering Physics", "Basic Electrical Eng", "Elements of Civil Eng"],
+            2: ["Engineering Mathematics II", "Engineering Chemistry", "Programming in C", "Elements of Mechanical Eng"],
+            3: ["Discrete Mathematical Structures", "Data Structures & Applications", "Computer Organization", "Object Oriented Programming"],
+            4: ["Design & Analysis of Algorithms", "Operating Systems", "Software Engineering", "Microprocessors & Controllers"],
+            5: ["Management & Entrepreneurship", "Database Management Systems", "Computer Networks", "Automata Theory"],
+            6: ["Compiler Design", "Web Technology & Applications", "Software Testing", "Cryptography & Network Security"],
+            7: ["Artificial Intelligence & ML", "Big Data Analytics", "Cloud Computing", "Advanced Computer Architecture"],
+            8: ["Internet of Things (IoT)", "Cyber Architecture & Forensics", "Major Project Work Phase-II", "Technical Seminar"]
+        };
+
+        const FACULTY_ID = "FACULTY123";
+        const FACULTY_PASS = "ADMIN2026";
+
+        let currentRole = 'student';
+        let loggedInStudentUsn = null;
+
+        // Initialize localized schema definitions
+        if (!localStorage.getItem('studentRegistry')) {
+            localStorage.setItem('studentRegistry', JSON.stringify({
+                "1XX20CS001": { name: "Anish Kumar", pass: "pass123" }
+            }));
+        }
+        if (!localStorage.getItem('gradesDB')) {
+            localStorage.setItem('gradesDB', JSON.stringify({
+                "1XX20CS001-sem1": { "Engineering Mathematics I": 85, "Engineering Physics": 90, "Basic Electrical Eng": 78, "Elements of Civil Eng": 88 },
+                "1XX20CS001-sem5": { "Management & Entrepreneurship": 82, "Database Management Systems": 76, "Computer Networks": 40, "Automata Theory": 91 }
+            }));
+        }
+
+        // --- HELPER METRIC FORMULAS (REAL-WORLD SGPA/CGPA ENGINES) ---
+        function calculateMarksToGPA(marks) {
+            if (marks >= 90) return 10.0;
+            if (marks >= 80) return 9.0;
+            if (marks >= 70) return 8.0;
+            if (marks >= 60) return 7.0;
+            if (marks >= 50) return 6.0;
+            if (marks >= 45) return 5.0;
+            if (marks >= 40) return 4.0;
+            return 0.0;
+        }
+
+        function calculateMarksToLetter(marks) {
+            if (marks >= 90) return 'O (Outstanding)';
+            if (marks >= 80) return 'A+ (Excellent)';
+            if (marks >= 70) return 'A (Very Good)';
+            if (marks >= 60) return 'B+ (Good)';
+            if (marks >= 50) return 'B (Above Average)';
+            if (marks >= 45) return 'C (Average)';
+            if (marks >= 40) return 'P (Pass)';
+            return 'F (Fail)';
+        }
+
+        // Calculates global GPA history across all semesters
+        function evaluateGlobalCGPA(usn) {
+            const gradesDB = JSON.parse(localStorage.getItem('gradesDB'));
+            let totalGPAPoints = 0;
+            let activeSemestersCount = 0;
+
+            for (let sem = 1; sem <= 8; sem++) {
+                const recordKey = `${usn}-sem${sem}`;
+                if (gradesDB[recordKey]) {
+                    const subjects = SYLLABUS_SCHEME[sem];
+                    let semGPAPoints = 0;
+                    subjects.forEach(sub => {
+                        semGPAPoints += calculateMarksToGPA(gradesDB[recordKey][sub] || 0);
+                    });
+                    totalGPAPoints += (semGPAPoints / subjects.length);
+                    activeSemestersCount++;
+                }
+            }
+            return activeSemestersCount > 0 ? (totalGPAPoints / activeSemestersCount).toFixed(2) : "0.00";
+        }
+
+        // --- AUTH CONTROLS ---
+        function switchRole(role) {
+            currentRole = role;
+            document.getElementById('toggleStudent').classList.toggle('active', role === 'student');
+            document.getElementById('toggleFaculty').classList.toggle('active', role === 'faculty');
+            
+            const label = document.getElementById('loginLabel');
+            const usernameInput = document.getElementById('username');
+            const regPrompt = document.getElementById('studentRegisterPrompt');
+            
+            document.getElementById('loginForm').reset();
+
+            if (role === 'faculty') {
+                label.innerText = "Faculty Access ID";
+                usernameInput.placeholder = "e.g., faculty123";
+                regPrompt.classList.add('hidden-element');
+            } else {
+                label.innerText = "Student USN";
+                usernameInput.placeholder = "e.g., 1XX20CS001";
+                regPrompt.classList.remove('hidden-element');
+            }
+        }
+
+        function showRegistration(show) {
+            if (show) {
+                document.getElementById('loginSection').classList.add('hidden-element');
+                document.getElementById('registerSection').classList.remove('hidden-element');
+            } else {
+                document.getElementById('registerSection').classList.add('hidden-element');
+                document.getElementById('loginSection').classList.remove('hidden-element');
+            }
+        }
+
+        function handleRegistration(event) {
+            event.preventDefault();
+            const usn = document.getElementById('regUsn').value.trim().toUpperCase();
+            const name = document.getElementById('regName').value.trim();
+            const pass = document.getElementById('regPassword').value;
+
+            let registry = JSON.parse(localStorage.getItem('studentRegistry'));
+            if (registry[usn]) return alert("This USN is already registered.");
+
+            registry[usn] = { name: name, pass: pass };
+            localStorage.setItem('studentRegistry', JSON.stringify(registry));
+            
+            alert("Registration successful! You can now log into your student dashboard.");
+            document.getElementById('registerForm').reset();
+            showRegistration(false);
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const inputId = document.getElementById('username').value.trim().toUpperCase();
+            const inputPass = document.getElementById('password').value;
+            const errorMsg = document.getElementById('loginError');
+
+            errorMsg.classList.add('hidden-element');
+
+            if (currentRole === 'faculty') {
+                if (inputId === FACULTY_ID && inputPass.toUpperCase() === FACULTY_PASS) {
+                    launchDashboard('faculty', inputId);
+                } else {
+                    errorMsg.innerText = "Invalid Faculty Credentials.";
+                    errorMsg.classList.remove('hidden-element');
+                }
+            } else {
+                let registry = JSON.parse(localStorage.getItem('studentRegistry'));
+                if (registry[inputId] && registry[inputId].pass === inputPass) {
+                    loggedInStudentUsn = inputId;
+                    launchDashboard('student', inputId);
+                } else {
+                    errorMsg.innerText = "Access Denied: Invalid Student Configuration.";
+                    errorMsg.classList.remove('hidden-element');
+                }
+            }
+        }
+
+        function launchDashboard(role, id) {
+            document.getElementById('loginSection').classList.add('hidden-element');
+            document.getElementById('logoutBtn').classList.remove('hidden-element');
+
+            if (role === 'faculty') {
+                document.getElementById('facultyDashboard').classList.remove('hidden-element');
+            } else {
+                document.getElementById('studentDashboard').classList.remove('hidden-element');
+                renderStudentData();
+            }
+        }
+
+        // --- FACULTY OPERATIONS ---
+        let targetUsnSelected = "";
+        let targetSemSelected = "";
+
+        function searchStudentAndSem() {
+            const usn = document.getElementById('searchUsn').value.trim().toUpperCase();
+            const sem = document.getElementById('facultySemSelect').value;
+            const registry = JSON.parse(localStorage.getItem('studentRegistry'));
+
+            if (!usn) return alert("Please specify a target USN.");
+            if (!registry[usn]) return alert("Student profile not found. The student must register first.");
+
+            targetUsnSelected = usn;
+            targetSemSelected = sem;
+
+            document.getElementById('currentEditingName').innerText = registry[usn].name;
+            document.getElementById('currentEditingUsn').innerText = usn;
+            document.getElementById('currentEditingSem').innerText = sem;
+
+            const subjects = SYLLABUS_SCHEME[sem];
+            const dynamicGrid = document.getElementById('facultyDynamicSubjectsGrid');
+            dynamicGrid.innerHTML = "";
+
+            const gradesDB = JSON.parse(localStorage.getItem('gradesDB'));
+            const recordKey = `${usn}-sem${sem}`;
+            const existingMarks = gradesDB[recordKey] || {};
+
+            let totalMarks = 0;
+            let totalSubjects = subjects.length;
+            let evaluatedCount = 0;
+            let criticalFail = false;
+
+            subjects.forEach((subject) => {
+                const value = existingMarks[subject] !== undefined ? existingMarks[subject] : "";
+                if(value !== "") {
+                    totalMarks += value;
+                    evaluatedCount++;
+                    if(value < 40) criticalFail = true;
+                }
+                dynamicGrid.innerHTML += `
+                    <div class="form-group">
+                        <label>${subject} (0-100)</label>
+                        <input type="number" class="subject-input-field" data-subject="${subject}" min="0" max="100" value="${value}" required>
+                    </div>
+                `;
+            });
+
+            // Populate Quick Insight panel for Faculty
+            if(evaluatedCount === totalSubjects) {
+                document.getElementById('facultyTermTotal').innerText = `${totalMarks} / ${totalSubjects * 100}`;
+                const statusBox = document.getElementById('facultyTermStatus');
+                statusBox.innerText = criticalFail ? "⚠️ Backlog Identified" : "✅ Clear Record";
+                statusBox.style.color = criticalFail ? "var(--danger)" : "var(--success)";
+            } else {
+                document.getElementById('facultyTermTotal').innerText = "Incomplete";
+                document.getElementById('facultyTermStatus').innerText = "Pending Processing";
+                document.getElementById('facultyTermStatus').style.color = "var(--amber)";
+            }
+
+            document.getElementById('marksManagementArea').classList.remove('hidden-element');
+        }
+
+        function saveMarks(event) {
+            event.preventDefault();
+            const gradesDB = JSON.parse(localStorage.getItem('gradesDB'));
+            const recordKey = `${targetUsnSelected}-sem${targetSemSelected}`;
+            
+            const inputs = document.querySelectorAll('.subject-input-field');
+            let subjectData = {};
+            
+            inputs.forEach(input => {
+                const subName = input.getAttribute('data-subject');
+                subjectData[subName] = parseInt(input.value);
+            });
+
+            gradesDB[recordKey] = subjectData;
+            localStorage.setItem('gradesDB', JSON.stringify(gradesDB));
+            alert(`Syllabus data successfully saved for ${targetUsnSelected}`);
+            searchStudentAndSem(); // Refresh insight badges
+        }
+
+        // --- STUDENT VIEW OPERATIONS ---
+        function renderStudentData() {
+            const currentSem = document.getElementById('studentSemSelect').value;
+            const registry = JSON.parse(localStorage.getItem('studentRegistry'));
+            const gradesDB = JSON.parse(localStorage.getItem('gradesDB'));
+
+            document.getElementById('displayStudentName').innerText = registry[loggedInStudentUsn].name;
+            document.getElementById('displayUsn').innerText = loggedInStudentUsn;
+
+            const subjects = SYLLABUS_SCHEME[currentSem];
+            const recordKey = `${loggedInStudentUsn}-sem${currentSem}`;
+            const performanceRecord = gradesDB[recordKey];
+
+            const tableBody = document.getElementById('studentTableBody');
+            tableBody.innerHTML = "";
+
+            // Calculate global overall pipeline metrics
+            document.getElementById('cgpaDisplay').innerText = evaluateGlobalCGPA(loggedInStudentUsn);
+
+            if (!performanceRecord) {
+                subjects.forEach(subject => {
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${subject}</td>
+                            <td>100</td>
+                            <td style="color: var(--text-muted); font-style: italic;">Awaiting Input</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('sgpaDisplay').innerText = "0.00";
+                document.getElementById('clearanceDisplay').innerText = `0 / ${subjects.length}`;
+                document.getElementById('studentProgressBar').style.width = "0%";
+                return;
+            }
+
+            let totalGPAValue = 0;
+            let clearedSubjectsCount = 0;
+
+            subjects.forEach(subject => {
+                const mark = performanceRecord[subject] !== undefined ? performanceRecord[subject] : 0;
+                const points = calculateMarksToGPA(mark);
+                const letterGrade = calculateMarksToLetter(mark);
+                const isPass = mark >= 40; // Standard VTU engineering pass bounds
+
+                if (isPass) clearedSubjectsCount++;
+                totalGPAValue += points;
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${subject}</td>
+                        <td>100</td>
+                        <td><strong>${mark}</strong></td>
+                        <td>${letterGrade}</td>
+                        <td class="${isPass ? 'pass' : 'fail'}">${isPass ? 'PASS' : 'FAIL'}</td>
+                    </tr>
+                `;
+            });
+
+            // Set UI Metrics
+            const calculatedSGPA = (totalGPAValue / subjects.length).toFixed(2);
+            document.getElementById('sgpaDisplay').innerText = calculatedSGPA;
+            document.getElementById('clearanceDisplay').innerText = `${clearedSubjectsCount} / ${subjects.length}`;
+            
+            // Sync progress bar
+            const progressPct = (clearedSubjectsCount / subjects.length) * 100;
+            const bar = document.getElementById('studentProgressBar');
+            bar.style.width = `${progressPct}%`;
+            bar.style.backgroundColor = progressPct === 100 ? "var(--success)" : "var(--primary)";
+        }
+
+        // --- APPLICATION LOGOUT ---
+        function logout() {
+            loggedInStudentUsn = null;
+            targetUsnSelected = "";
+            targetSemSelected = "";
+            
+            document.getElementById('loginForm').reset();
+            document.getElementById('registerForm').reset();
+            document.getElementById('marksForm').reset();
+            if(document.getElementById('searchUsn')) document.getElementById('searchUsn').value = "";
+            
+            document.getElementById('loginSection').classList.remove('hidden-element');
+            document.getElementById('facultyDashboard').classList.add('hidden-element');
+            document.getElementById('studentDashboard').classList.add('hidden-element');
+            document.getElementById('marksManagementArea').classList.add('hidden-element');
+            document.getElementById('registerSection').classList.add('hidden-element');
+            document.getElementById('logoutBtn').classList.add('hidden-element');
+        }
+    </script>
+</body>
+</html>

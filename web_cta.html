@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack | Academic Performance Tracker</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .hidden-element {
+            display: none !important;
+        }
+
+        /* Login Toggle Buttons */
+        .login-toggle {
+            display: flex;
+            background: var(--border);
+            padding: 4px;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-toggle button {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .login-toggle button.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], input[type="password"], input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* Buttons */
+        .btn-primary, .btn-success {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary { background: var(--primary); }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-success { background: var(--success); }
+
+        /* Dashboards Styling */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .badge {
+            background: #fee2e2;
+            color: var(--danger);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .student-badge { background: #dbeafe; color: var(--primary); }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .search-row input { flex: 2; }
+        .search-row button { flex: 1; }
+
+        .student-info-bar {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .marks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Tables */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .report-table th, .report-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .report-table th { background: var(--background); font-weight: 600; }
+
+        .pass { color: var(--success); font-weight: bold; }
+        .fail { color: var(--danger); font-weight: bold; }
+
+        .summary-box {
+            margin-top: 1.5rem;
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .summary-box p {
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #logoutBtn {
+            position: absolute;
+            right: 0;
+            top: 10px;
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .error-text { color: var(--danger); margin-top: 1rem; font-size: 0.9rem; text-align: center;}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🎓 EduTrack</h1>
+            <p>University Academic Performance Portal</p>
+            <button id="logoutBtn" class="hidden-element" onclick="logout()">Logout</button>
+        </header>
+
+        <section id="loginSection" class="card">
+            <h2>Portal Login</h2>
+            <div class="login-toggle">
+                <button id="toggleStudent" class="active" onclick="switchLoginMode('student')">Student</button>
+                <button id="toggleFaculty" onclick="switchLoginMode('faculty')">Faculty</button>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label id="loginLabel" for="username">Student USN</label>
+                    <input type="text" id="username" placeholder="e.g., 1XX20CS001" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary">Access Dashboard</button>
+            </form>
+            <p id="loginError" class="error-text hidden-element">Invalid Credentials. Try again.</p>
+        </section>
+
+        <section id="facultyDashboard" class="card hidden-element">
+            <div class="dashboard-header">
+                <h2>Faculty Management Console</h2>
+                <span class="badge">Faculty Mode</span>
+            </div>
+            
+            <div class="search-box">
+                <h3>Search Student by USN</h3>
+                <div class="search-row">
+                    <input type="text" id="searchUsn" placeholder="e.g., 1XX20CS001">
+                    <button class="btn-primary" onclick="searchStudent()">Search / Initialize</button>
+                </div>
+            </div>
+
+            <div id="marksManagementArea" class="hidden-element">
+                <div class="student-info-bar">
+                    <p>Editing Record for: <strong id="currentEditingUsn">-</strong></p>
+                </div>
+
+                <form id="marksForm" onsubmit="saveMarks(event)">
+                    <div class="marks-grid">
+                        <div class="form-group">
+                            <label>Web Technology (0-100)</label>
+                            <input type="number" id="marksWeb" min="0" max="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Database Management (0-100)</label>
+                            <input type="number" id="marksDb" min="0" max="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Computer Networks (0-100)</label>
+                            <input type="number" id="marksCn" min="0" max="100" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-success">Save & Update Academic Record</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="studentDashboard" class="card hidden-element">
+            <div class="dashboard-header">
+                <h2>Academic Performance Report</h2>
+                <span class="badge student-badge">Student Mode</span>
+            </div>
+            
+            <div class="student-profile">
+                <p><strong>Welcome back, USN:</strong> <span id="displayUsn">-</span></p>
+            </div>
+
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Subject Code & Title</th>
+                        <th>Max Marks</th>
+                        <th>Marks Obtained</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CS601 - Web Technology</td>
+                        <td>100</td>
+                        <td id="viewWeb">-</td>
+                        <td id="statusWeb">-</td>
+                    </tr>
+                    <tr>
+                        <td>CS602 - Database Management System</td>
+                        <td>100</td>
+                        <td id="viewDb">-</td>
+                        <td id="statusDb">-</td>
+                    </tr>
+                    <tr>
+                        <td>CS603 - Computer Networks</td>
+                        <td>100</td>
+                        <td id="viewCn">-</td>
+                        <td id="statusCn">-</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="summary-box">
+                <p><strong>Total Marks:</strong> <span><span id="totalMarks">0</span> / 300</span></p>
+                <p><strong>Aggregate Percentage:</strong> <span id="percentage">0%</span></p>
+                <p><strong>Overall Class Standing:</strong> <span id="gradeResult">-</span></p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- DATA PERSISTENCE INITIALIZATION ---
+        const FACULTY_ID = "faculty123";
+        const FACULTY_PASS = "admin2026";
+        const DEFAULT_STUDENT_PASS = "student123"; 
+
+        let currentRole = 'student';
+        let activeUser = null;
+
+        // Populate baseline local mock data if clean state
+        if (!localStorage.getItem('studentDB')) {
+            const initialData = {
+                "1XX20CS001": { web: 85, db: 78, cn: 92 },
+                "1XX20CS002": { web: 45, db: 52, cn: 38 }
+            };
+            localStorage.setItem('studentDB', JSON.stringify(initialData));
+        }
+
+        // --- AUTH CONTROLS & INTERFACE TOGGLE ---
+        function switchLoginMode(role) {
+            currentRole = role;
+            document.getElementById('toggleStudent').classList.toggle('active', role === 'student');
+            document.getElementById('toggleFaculty').classList.toggle('active', role === 'faculty');
+            
+            const label = document.getElementById('loginLabel');
+            const usernameInput = document.getElementById('username');
+            
+            if (role === 'faculty') {
+                label.innerText = "Faculty Access ID";
+                usernameInput.placeholder = "e.g., faculty123";
+            } else {
+                label.innerText = "Student USN";
+                usernameInput.placeholder = "e.g., 1XX20CS001";
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const inputId = document.getElementById('username').value.trim().toUpperCase();
+            const inputPass = document.getElementById('password').value;
+            const errorMsg = document.getElementById('loginError');
+
+            errorMsg.classList.add('hidden-element');
+
+            if (currentRole === 'faculty') {
+                if (inputId === FACULTY_ID.toUpperCase() && inputPass === FACULTY_PASS) {
+                    launchDashboard('faculty', inputId);
+                } else {
+                    errorMsg.innerText = "Invalid Faculty Credentials.";
+                    errorMsg.classList.remove('hidden-element');
+                }
+            } else {
+                if (inputId.length >= 5 && inputPass === DEFAULT_STUDENT_PASS) {
+                    launchDashboard('student', inputId);
+                } else {
+                    errorMsg.innerText = "Invalid Student USN or Password. (Hint: Use password 'student123')";
+                    errorMsg.classList.remove('hidden-element');
+                }
+            }
+        }
+
+        function launchDashboard(role, id) {
+            activeUser = id;
+            document.getElementById('loginSection').classList.add('hidden-element');
+            document.getElementById('logoutBtn').classList.remove('hidden-element');
+
+            if (role === 'faculty') {
+                document.getElementById('facultyDashboard').classList.remove('hidden-element');
+            } else {
+                document.getElementById('studentDashboard').classList.remove('hidden-element');
+                renderStudentData(id);
+            }
+        }
+
+        // --- FACULTY DATA CONTROLS ---
+        let targetedStudentUsn = "";
+
+        function searchStudent() {
+            const usn = document.getElementById('searchUsn').value.trim().toUpperCase();
+            if (!usn) return alert("Please enter a valid USN.");
+
+            targetedStudentUsn = usn;
+            document.getElementById('currentEditingUsn').innerText = usn;
+            document.getElementById('marksManagementArea').classList.remove('hidden-element');
+
+            const db = JSON.parse(localStorage.getItem('studentDB'));
+            
+            if (db[usn]) {
+                document.getElementById('marksWeb').value = db[usn].web;
+                document.getElementById('marksDb').value = db[usn].db;
+                document.getElementById('marksCn').value = db[usn].cn;
+            } else {
+                document.getElementById('marksWeb').value = "";
+                document.getElementById('marksDb').value = "";
+                document.getElementById('marksCn').value = "";
+            }
+        }
+
+        function saveMarks(event) {
+            event.preventDefault();
+            const db = JSON.parse(localStorage.getItem('studentDB'));
+
+            db[targetedStudentUsn] = {
+                web: parseInt(document.getElementById('marksWeb').value),
+                db: parseInt(document.getElementById('marksDb').value),
+                cn: parseInt(document.getElementById('marksCn').value)
+            };
+
+            localStorage.setItem('studentDB', JSON.stringify(db));
+            alert(`Record Updated Successfully for USN: ${targetedStudentUsn}`);
+        }
+
+        // --- STUDENT VIEW RENDERER ---
+        function renderStudentData(usn) {
+            document.getElementById('displayUsn').innerText = usn;
+            const db = JSON.parse(localStorage.getItem('studentDB'));
+            const records = db[usn];
+
+            const subWeb = document.getElementById('viewWeb');
+            const subDb = document.getElementById('viewDb');
+            const subCn = document.getElementById('viewCn');
+
+            if (!records) {
+                subWeb.innerText = subDb.innerText = subCn.innerText = "Not Evaluated";
+                document.getElementById('totalMarks').innerText = "0";
+                document.getElementById('percentage').innerText = "0%";
+                document.getElementById('gradeResult').innerText = "Pending Processing";
+                return;
+            }
+
+            subWeb.innerText = records.web;
+            subDb.innerText = records.db;
+            subCn.innerText = records.cn;
+
+            evalStatus('statusWeb', records.web);
+            evalStatus('statusDb', records.db);
+            evalStatus('statusCn', records.cn);
+
+            const aggregate = records.web + records.db + records.cn;
+            const percentage = ((aggregate / 300) * 100).toFixed(1);
+
+            document.getElementById('totalMarks').innerText = aggregate;
+            document.getElementById('percentage').innerText = `${percentage}%`;
+
+            let standardGrade = "Fail";
+            if(records.web >= 35 && records.db >= 35 && records.cn >= 35) {
+                if(percentage >= 75) standardGrade = "First Class with Distinction 🌟";
+                else if(percentage >= 60) standardGrade = "First Class 👍";
+                else standardGrade = "Second Class Pass";
+            }
+            document.getElementById('gradeResult').innerText = standardGrade;
+        }
+
+        function evalStatus(elementId, mark) {
+            const el = document.getElementById(elementId);
+            if(mark >= 35) {
+                el.innerText = "PASS";
+                el.className = "pass";
+            } else {
+                el.innerText = "FAIL";
+                el.className = "fail";
+            }
+        }
+
+        // --- APPLICATION LOGOUT ---
+        function logout() {
+            activeUser = null;
+            targetedStudentUsn = "";
+            document.getElementById('loginForm').reset();
+            document.getElementById('marksForm').reset();
+            document.getElementById('searchUsn').value = "";
+            
+            document.getElementById('loginSection').classList.remove('hidden-element');
+            document.getElementById('facultyDashboard').classList.add('hidden-element');
+            document.getElementById('studentDashboard').classList.add('hidden-element');
+            document.getElementById('marksManagementArea').classList.add('hidden-element');
+            document.getElementById('logoutBtn').classList.add('hidden-element');
+        }
+    </script>
+</body>
+</html>
